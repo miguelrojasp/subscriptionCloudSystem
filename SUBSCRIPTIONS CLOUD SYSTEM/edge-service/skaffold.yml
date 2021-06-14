@@ -1,0 +1,24 @@
+apiVersion: skaffold/v2beta13
+kind: Config
+metadata:
+  name: edge-service
+build:
+  artifacts:
+    - image: miguelrojas/edge-service
+      buildpacks:
+        builder: gcr.io/paketo-buildpacks/builder:base
+        env:
+          - BP_JVM_VERSION=11.*
+deploy:
+  helm:
+    releases:
+      - name: polardb-redis
+        remoteChart: bitnami/redis
+        setValues:
+          cluster.enabled: false
+          fullnameOverride: polardb-redis
+          image.tag: 6
+          password: admin
+  kubectl:
+    manifests:
+      - k8s/*.yml
